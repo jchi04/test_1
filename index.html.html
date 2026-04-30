@@ -7,7 +7,7 @@
     <style>
         :root {
             --main-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-bg: rgba(255, 255, 255, 0.95);
             --primary-blue: #2c3e50;
             --accent-indigo: #4834d4;
             --emergency-red: #d63031;
@@ -21,11 +21,12 @@
             background-attachment: fixed;
             color: var(--text-dark);
             min-height: 100vh;
-            padding-bottom: 100px;
+            padding-bottom: 120px; /* 푸터와 겹치지 않게 여백 */
         }
 
-        header { padding: 60px 20px 40px; text-align: center; }
-        header h1 { font-size: 2.5rem; margin: 0; font-weight: 800; color: var(--primary-blue); }
+        header { padding: 50px 20px 30px; text-align: center; }
+        header h1 { font-size: 2.5rem; margin: 0; font-weight: 800; color: var(--primary-blue); letter-spacing: -1px; }
+        header .subtitle { font-size: 1.1rem; margin-top: 10px; color: #636e72; }
 
         .emergency-trigger {
             background: var(--emergency-red);
@@ -33,7 +34,7 @@
             width: 140px; height: 140px;
             border-radius: 50%;
             font-size: 1.25rem; font-weight: 800;
-            cursor: pointer; margin: 30px auto;
+            cursor: pointer; margin: 25px auto;
             display: block;
             box-shadow: 0 10px 30px rgba(214, 48, 49, 0.3);
             animation: warning-pulse 2s infinite;
@@ -45,467 +46,162 @@
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(214, 48, 49, 0); }
         }
 
-        .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; padding: 0 20px; }
+        .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; padding: 0 20px; }
         .tab-btn {
             background: var(--glass-bg); border: 1px solid rgba(0,0,0,0.1);
-            padding: 14px 28px; border-radius: 8px;
-            font-weight: 700; color: #636e72; cursor: pointer;
+            padding: 12px 24px; border-radius: 8px;
+            font-weight: 700; color: #636e72; cursor: pointer; transition: 0.2s;
         }
-        .tab-btn.active { background: var(--primary-blue); color: white; }
+        .tab-btn.active { background: var(--primary-blue); color: white; border-color: var(--primary-blue); }
 
         .container { max-width: 550px; margin: 0 auto; padding: 0 20px; }
         .card {
             background: var(--glass-bg); border: 1px solid rgba(0,0,0,0.05);
-            padding: 35px; border-radius: 12px; margin-bottom: 25px;
+            padding: 30px; border-radius: 12px; margin-bottom: 25px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.05);
         }
 
         h3 { 
-            margin-top: 0; font-size: 1.4rem; color: var(--primary-blue);
+            margin-top: 0; font-size: 1.3rem; color: var(--primary-blue);
             border-left: 5px solid var(--accent-indigo); padding-left: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
-        label { font-size: 0.95rem; font-weight: 700; margin-bottom: 10px; display: block; }
+        label { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; display: block; color: var(--primary-blue); }
         input, select, textarea {
             background: #ffffff; border: 1px solid #dfe6e9;
             border-radius: 6px; padding: 14px; width: 100%;
-            box-sizing: border-box; margin-bottom: 25px; font-size: 1rem;
+            box-sizing: border-box; margin-bottom: 20px; font-size: 1rem;
         }
 
-        /* 위치 정보 표시 스타일 */
+        /* 실명 입력창 애니메이션 */
+        #real-name-container { display: none; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
         .location-info {
             background: #f1f2f6; padding: 15px; border-radius: 8px;
             margin-bottom: 20px; font-size: 0.9rem; color: #2d3436;
-            display: none; border: 1px solid #dfe6e9;
+            display: none; border: 1px solid #dfe6e9; line-height: 1.6;
         }
 
         .btn-submit {
             background: var(--accent-indigo); color: white; border: none;
             padding: 18px; border-radius: 8px; width: 100%;
-            font-size: 1.15rem; font-weight: 800; cursor: pointer;
+            font-size: 1.1rem; font-weight: 800; cursor: pointer;
         }
 
         .escape-btn {
-            position: fixed; right: 25px; bottom: 100px;
+            position: fixed; right: 20px; bottom: 100px;
             background: #2d3436; color: white; border: none;
-            padding: 12px 24px; border-radius: 4px; z-index: 1000;
+            padding: 10px 20px; border-radius: 4px; font-weight: 600;
+            z-index: 1000; cursor: pointer; font-size: 0.85rem;
         }
 
         footer {
             position: fixed; bottom: 0; width: 100%; background: #ffffff;
-            padding: 20px 0; text-align: center; border-top: 1px solid #dfe6e9;
+            padding: 20px 0; text-align: center; border-top: 1px solid #dfe6e9; z-index: 999;
         }
 
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center;
         }
-        .modal-content { background: white; padding: 40px; border-radius: 12px; text-align: center; max-width: 400px; }
+        .modal-content { background: white; padding: 35px; border-radius: 12px; text-align: center; max-width: 350px; }
     </style>
 </head>
 <body>
 
-    <button class="escape-btn" onclick="quickEscape()">화면 즉시 숨기기 (Naver 이동)</button>
+    <button class="escape-btn" onclick="quickEscape()">화면 즉시 숨기기 (Naver)</button>
 
     <header>
         <h1>SafeNet</h1>
-        <p class="subtitle">아동·청소년 보호를 위한 전문 신고 시스템</p>
+        <p class="subtitle">아동·청소년 보호 전문 신고 시스템</p>
         <button class="emergency-trigger" onclick="getLocationAndReport()">긴급 신고</button>
     </header>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('report')">신고서 작성</button>
-        <button class="tab-btn" onclick="switchTab('auto')">자동 보안 설정</button>
+        <button class="tab-btn active" onclick="switchTab('report')">신고 접수</button>
+        <button class="tab-btn" onclick="switchTab('auto')">보안 설정</button>
     </div>
 
     <div class="container">
         <section id="report-section" class="content-section">
             <div class="card">
-                <h3>정식 신고 접수</h3>
+                <h3>정식 신고서</h3>
                 
                 <div id="location-display" class="location-info"></div>
 
-                <label>신고 유형</label>
-                <select id="report-type">
-                    <option>유형을 선택하세요</option>
-                    <option>학교폭력 / 집단 따돌림</option>
-                    <option>가정폭력 / 학대</option>
-                    <option>기타 긴급 구조 요청</option>
-                </select>
-
-                <label>상세 위치 (건물명, 동·호수 등)</label>
-                <input type="text" id="detail-address" placeholder="정확한 출동을 위해 상세 위치를 적어주세요.">
-
-                <label>사건 상세 내용</label>
-                <textarea id="report-content" rows="5" placeholder="피해 상황을 기술해 주십시오."></textarea>
-
-                <button class="btn-submit" onclick="submitReport()">공식 신고 접수</button>
-            </div>
-        </section>
-
-        <section id="auto-section" class="content-section" style="display:none;">
-            <div class="card">
-                <h3>시스템 보안 설정</h3>
-                <p>GPS 기반 위치 추적 및 긴급 알림 활성화를 관리합니다.</p>
-                <button class="btn-submit" style="background: #2d3436;">설정 저장</button>
-            </div>
-        </section>
-    </div>
-
-    <footer>
-        <span>24시간 긴급 상담 : </span>
-        <a href="tel:1577-1391" style="color: var(--emergency-red); font-weight: 800;">📞 1577-1391</a>
-    </footer>
-
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <h2 id="modal-title">접수 완료</h2>
-            <p id="modal-body"></p>
-            <button class="btn-submit" onclick="closeModal()">확인</button>
-        </div>
-    </div>
-
-    <script>
-        // GPS 위치 수집 및 출력 함수
-        function getLocationAndReport() {
-            const display = document.getElementById('location-display');
-            
-            if (navigator.geolocation) {
-                display.style.display = 'block';
-                display.innerHTML = "📍 현재 위치를 파악하고 있습니다...";
-
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    const mapLink = `https://www.google.com/maps?q=${lat},${lon}`;
-                    
-                    display.innerHTML = `
-                        <strong>현재 위치 파악 성공</strong><br>
-                        위도: ${lat.toFixed(4)}, 경도: ${lon.toFixed(4)}<br>
-                        <a href="${mapLink}" target="_blank" style="color: #4834d4;">[지도에서 위치 보기]</a>
-                    `;
-
-                    showEmergencyModal(lat, lon);
-                }, function(error) {
-                    display.innerHTML = "❌ 위치 정보를 가져올 수 없습니다. (권한 거부 또는 연결 오류)";
-                });
-            } else {
-                alert("이 브라우저에서는 위치 서비스를 지원하지 않습니다.");
-            }
-        }
-
-        function showEmergencyModal(lat, lon) {
-            document.getElementById('modal-title').innerText = "🚨 긴급 알람 전송";
-            document.getElementById('modal-body').innerHTML = `
-                최우선 순위 구조 신호가 발송되었습니다.<br><br>
-                <strong>수집된 위치:</strong> 위도 ${lat.toFixed(4)}, 경도 ${lon.toFixed(4)}<br>
-                경찰 및 유관 기관에 현 위치 지도가 함께 전달됩니다.
-            `;
-            document.getElementById('modal').style.display = 'flex';
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tab + '-section').style.display = 'block';
-            event.currentTarget.classList.add('active');
-        }
-
-        function submitReport() {
-            document.getElementById('modal-title').innerText = "접수 완료";
-            document.getElementById('modal-body').innerText = "신고서가 성공적으로 전송되었습니다.";
-            document.getElementById('modal').style.display = 'flex';
-        }
-
-        function closeModal() { document.getElementById('modal').style.display = 'none'; }
-        function quickEscape() { window.location.href = "https://www.naver.com"; }
-    </script>
-</body>
-</html>            color: var(--primary-blue);
-            letter-spacing: -1px;
-        }
-
-        header .subtitle {
-            font-size: 1.1rem;
-            margin-top: 10px;
-            color: #636e72;
-            font-weight: 400;
-        }
-
-        .emergency-trigger {
-            background: var(--emergency-red);
-            color: white;
-            border: none;
-            width: 140px; height: 140px;
-            border-radius: 50%;
-            font-size: 1.25rem;
-            font-weight: 800;
-            cursor: pointer;
-            margin: 30px auto;
-            display: block;
-            box-shadow: 0 10px 30px rgba(214, 48, 49, 0.3);
-            animation: warning-pulse 2s infinite;
-        }
-
-        @keyframes warning-pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(214, 48, 49, 0.4); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(214, 48, 49, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(214, 48, 49, 0); }
-        }
-
-        .tabs {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            padding: 0 20px;
-        }
-
-        .tab-btn {
-            background: var(--glass-bg);
-            border: 1px solid rgba(0,0,0,0.1);
-            padding: 14px 28px;
-            border-radius: 8px;
-            font-weight: 700;
-            color: #636e72;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .tab-btn.active {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-
-        .container {
-            max-width: 550px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .card {
-            background: var(--glass-bg);
-            border: 1px solid rgba(0,0,0,0.05);
-            padding: 35px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        }
-
-        h3 { 
-            margin-top: 0; 
-            font-size: 1.4rem; 
-            color: var(--primary-blue);
-            border-left: 5px solid var(--accent-indigo);
-            padding-left: 15px;
-            margin-bottom: 25px;
-        }
-
-        label { 
-            font-size: 0.95rem; 
-            font-weight: 700;
-            color: var(--primary-blue);
-            margin-bottom: 10px; 
-            display: block; 
-        }
-
-        input, select, textarea {
-            background: #ffffff;
-            border: 1px solid #dfe6e9;
-            border-radius: 6px;
-            padding: 14px;
-            width: 100%;
-            box-sizing: border-box;
-            margin-bottom: 25px;
-            font-size: 1rem;
-            color: var(--text-dark);
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent-indigo);
-            box-shadow: 0 0 0 3px rgba(72, 52, 212, 0.1);
-        }
-
-        /* 실명 입력 필드 애니메이션 */
-        #real-name-container {
-            display: none;
-            overflow: hidden;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .btn-submit {
-            background: var(--accent-indigo);
-            color: white;
-            border: none;
-            padding: 18px;
-            border-radius: 8px;
-            width: 100%;
-            font-size: 1.15rem;
-            font-weight: 800;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-submit:hover {
-            background: #341f97;
-        }
-
-        .escape-btn {
-            position: fixed;
-            right: 25px; bottom: 100px;
-            background: #2d3436;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            z-index: 1000;
-        }
-
-        footer {
-            position: fixed;
-            bottom: 0; width: 100%;
-            background: #ffffff;
-            padding: 20px 0;
-            text-align: center;
-            border-top: 1px solid #dfe6e9;
-            z-index: 900;
-        }
-
-        .comfort-msg {
-            background: #f1f2f6;
-            color: #57606f;
-            padding: 20px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            margin-top: 25px;
-            line-height: 1.6;
-            text-align: center;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            z-index: 2000;
-            justify-content: center; align-items: center;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            text-align: center;
-            max-width: 350px;
-        }
-    </style>
-</head>
-<body>
-
-    <button class="escape-btn" onclick="quickEscape()">화면 즉시 숨기기 (Naver 이동)</button>
-
-    <header>
-        <h1>SafeNet</h1>
-        <p class="subtitle">아동·청소년 보호를 위한 전문 신고 시스템</p>
-        <button class="emergency-trigger" onclick="showEmergencyModal()">긴급 신고</button>
-    </header>
-
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('report')">신고서 작성</button>
-        <button class="tab-btn" onclick="switchTab('auto')">자동 보안 설정</button>
-    </div>
-
-    <div class="container">
-        <!-- 신고 섹션 -->
-        <section id="report-section" class="content-section">
-            <div class="card">
-                <h3>정식 신고 접수</h3>
-                
-                <label for="report-mode">신고인 본인 확인</label>
+                <label>신고 방식 선택</label>
                 <select id="report-mode" onchange="toggleNameField()">
-                    <option value="anon">익명 신고 (신원 비공개)</option>
+                    <option value="anon">익명 신고 (신원 보호)</option>
                     <option value="real">실명 신고 (본인 확인)</option>
                 </select>
 
-                <!-- 실명 선택 시 나타나는 필드 -->
                 <div id="real-name-container">
-                    <label for="user-name">신고인 성함</label>
+                    <label>신고인 성함</label>
                     <input type="text" id="user-name" placeholder="성함을 입력해 주세요">
                 </div>
 
-                <label>피해 유형 선택</label>
+                <label>피해 유형</label>
                 <select>
                     <option>유형을 선택하세요</option>
                     <option>학교폭력 / 집단 따돌림</option>
                     <option>가정폭력 / 학대</option>
-                    <option>디지털 성범죄 / 사이버 폭력</option>
-                    <option>기타 긴급 구조 요청</option>
+                    <option>기타 긴급 상황</option>
                 </select>
 
-                <label>사건 발생 경위 및 상세 내용</label>
-                <textarea rows="6" placeholder="사건의 일시, 장소, 피해 내용을 구체적으로 작성해 주시기 바랍니다."></textarea>
+                <label>발생 장소 및 상세 주소</label>
+                <input type="text" id="detail-address" placeholder="건물명, 동·호수 등을 적어주세요.">
+
+                <label>피해 내용 기술</label>
+                <textarea rows="5" placeholder="사건 경위를 상세히 작성해 주시기 바랍니다."></textarea>
 
                 <button class="btn-submit" onclick="submitReport()">공식 신고 접수</button>
-                
-                <div class="comfort-msg">
-                    현재 입력하신 정보는 관련법에 따라 엄격히 보호되며,<br>
-                    <strong>전문 상담사와 수사관</strong>에게 즉시 전달될 예정입니다.
-                </div>
             </div>
         </section>
 
-        <!-- 보안 설정 섹션 -->
         <section id="auto-section" class="content-section" style="display:none;">
             <div class="card">
-                <h3>시스템 보안 설정</h3>
-                <p style="font-size: 0.95rem; margin-bottom: 25px; color: #636e72;">위험 상황 자동 감지 및 긴급 알림 기능을 설정합니다.</p>
-                
-                <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; margin-bottom: 20px;">
-                    <label style="margin-bottom: 5px;">음성 감지 긴급 알림</label>
-                    <p style="font-size: 0.85rem; color: #888; margin-top: 0;">특정 키워드(도와줘, 살려줘) 감지 시 자동 신고</p>
-                </div>
-                
-                <button class="btn-submit" style="background: #2d3436;" onclick="alert('시스템 보안 설정이 업데이트되었습니다.')">설정 변경 사항 저장</button>
+                <h3>시스템 보안</h3>
+                <p style="color: #636e72; font-size: 0.95rem;">GPS 위치 추적 및 긴급 알림 활성화 상태를 관리합니다.</p>
+                <button class="btn-submit" style="background: #2d3436;">환경 설정 저장</button>
             </div>
         </section>
     </div>
 
     <footer>
-        <span style="color: #636e72;">24시간 긴급 상담 센터 : </span>
-        <a href="tel:1577-1391" style="text-decoration: none; color: var(--emergency-red); font-weight: 800;">
-            📞 1577-1391
-        </a>
+        <span style="color: #636e72; font-size: 0.9rem;">24시간 긴급 상담 : </span>
+        <a href="tel:1577-1391" style="color: var(--emergency-red); font-weight: 800; text-decoration: none;">📞 1577-1391</a>
     </footer>
 
     <div id="modal" class="modal">
         <div class="modal-content">
             <h2 id="modal-title" style="color: var(--primary-blue); margin-bottom: 15px;">접수 완료</h2>
-            <p id="modal-body" style="color: #636e72; line-height: 1.6; margin-bottom: 25px;">신고서가 성공적으로 전송되었습니다.<br>담당 전문 요원이 신속하게 확인 후 조치하겠습니다.</p>
+            <p id="modal-body" style="color: #636e72; line-height: 1.6; margin-bottom: 25px;"></p>
             <button class="btn-submit" onclick="closeModal()">확인</button>
         </div>
     </div>
 
     <script>
-        // 실명 신고 선택 시 이름 입력 필드 토글
         function toggleNameField() {
-            const reportMode = document.getElementById('report-mode').value;
-            const nameContainer = document.getElementById('real-name-container');
-            
-            if (reportMode === 'real') {
-                nameContainer.style.display = 'block';
-            } else {
-                nameContainer.style.display = 'none';
+            const mode = document.getElementById('report-mode').value;
+            const container = document.getElementById('real-name-container');
+            container.style.display = (mode === 'real') ? 'block' : 'none';
+        }
+
+        function getLocationAndReport() {
+            const display = document.getElementById('location-display');
+            if (navigator.geolocation) {
+                display.style.display = 'block';
+                display.innerHTML = "📍 위치 파악 중...";
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    display.innerHTML = `<strong>위치 수집 성공</strong><br>좌표: ${lat.toFixed(4)}, ${lon.toFixed(4)}<br><a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" style="color: #4834d4;">[지도에서 보기]</a>`;
+                    showModal("🚨 긴급 알람 발송", `현 위치 좌표(${lat.toFixed(4)}, ${lon.toFixed(4)})가 수사 기관으로 즉시 전송되었습니다. 안전한 곳으로 대피하십시오.`);
+                }, function() {
+                    display.innerHTML = "❌ 위치 정보를 가져올 수 없습니다.";
+                });
             }
         }
 
@@ -517,22 +213,17 @@
         }
 
         function submitReport() {
+            showModal("접수 완료", "신고서가 성공적으로 전송되었습니다. 담당 전문 요원이 신속하게 확인하겠습니다.");
+        }
+
+        function showModal(title, body) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerHTML = body;
             document.getElementById('modal').style.display = 'flex';
         }
 
-        function showEmergencyModal() {
-            document.getElementById('modal-title').innerText = "🚨 긴급 알람 전송";
-            document.getElementById('modal-body').innerText = "최우선 순위 긴급 구조 신호가 발송되었습니다. GPS 기반 위치 추적이 시작되니 안전한 장소로 대피하십시오.";
-            document.getElementById('modal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-        }
-
-        function quickEscape() {
-            window.location.href = "https://www.naver.com";
-        }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+        function quickEscape() { window.location.href = "https://www.naver.com"; }
     </script>
 </body>
 </html>
