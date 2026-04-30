@@ -83,6 +83,17 @@
             display: none; border: 1px solid #dfe6e9; line-height: 1.6;
         }
 
+        /* 추가된 지도 컨테이너 스타일 */
+        #map-container {
+            margin-top: 20px;
+            width: 100%;
+            height: 250px;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+            border: 1px solid #dfe6e9;
+        }
+
         .btn-submit {
             background: var(--accent-indigo); color: white; border: none;
             padding: 18px; border-radius: 8px; width: 100%;
@@ -161,6 +172,7 @@
             </div>
         </section>
 
+        <!-- 보안 안내 섹션 (수정 없이 기능만 추가됨) -->
         <section id="auto-section" class="content-section" style="display:none;">
             <div class="card">
                 <h3>시스템 보안 안내</h3>
@@ -171,6 +183,11 @@
                     <strong>2. 데이터 암호화 전송</strong><br>
                     모든 신고 내용은 관련 법령에 따라 철저히 비공개로 취급됩니다.
                 </p>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                
+                <!-- 추가된 위치 확인 인터페이스 -->
+                <button class="btn-submit" style="background: #2d3436;" onclick="showCurrentMap()">내 현재 위치 지도 확인</button>
+                <div id="map-container"></div>
             </div>
         </section>
     </div>
@@ -193,6 +210,24 @@
             const mode = document.getElementById('report-mode').value;
             const container = document.getElementById('real-name-container');
             container.style.display = (mode === 'real') ? 'block' : 'none';
+        }
+
+        // 보안 안내 창 전용 지도 표시 함수
+        function showCurrentMap() {
+            const mapContainer = document.getElementById('map-container');
+            if (navigator.geolocation) {
+                mapContainer.style.display = 'block';
+                mapContainer.innerHTML = "<p style='text-align:center; padding-top:100px; color:#666;'>지도를 불러오고 있습니다...</p>";
+                
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    // 구글 지도 임베드 (무료 방식)
+                    mapContainer.innerHTML = `<iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?q=${lat},${lon}&hl=ko&z=15&amp;output=embed"></iframe>`;
+                }, function() {
+                    mapContainer.innerHTML = "<p style='padding:20px; color:red;'>위치 정보를 가져올 수 없습니다. 권한 설정을 확인해주세요.</p>";
+                });
+            }
         }
 
         function getLocationAndReport() {
