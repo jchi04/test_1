@@ -74,8 +74,7 @@
             box-sizing: border-box; margin-bottom: 20px; font-size: 1rem;
         }
 
-        #real-name-container { display: none; animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        #real-name-container { display: none; }
 
         .location-info {
             background: #f1f2f6; padding: 15px; border-radius: 8px;
@@ -83,15 +82,9 @@
             display: none; border: 1px solid #dfe6e9; line-height: 1.6;
         }
 
-        /* 추가된 지도 컨테이너 스타일 */
         #map-container {
-            margin-top: 20px;
-            width: 100%;
-            height: 250px;
-            border-radius: 8px;
-            overflow: hidden;
-            display: none;
-            border: 1px solid #dfe6e9;
+            margin-top: 20px; width: 100%; height: 250px;
+            border-radius: 8px; overflow: hidden; display: none; border: 1px solid #dfe6e9;
         }
 
         .btn-submit {
@@ -102,12 +95,22 @@
 
         .escape-btn {
             position: fixed; right: 20px; bottom: 100px;
-            background: rgba(45, 52, 54, 0.7);
-            color: white; border: none;
+            background: rgba(45, 52, 54, 0.7); color: white; border: none;
             padding: 10px 18px; border-radius: 20px;
             font-weight: 600; z-index: 1000; cursor: pointer;
             font-size: 0.8rem; backdrop-filter: blur(4px);
         }
+
+        /* [추가] 가짜 공룡 게임 위장 레이어 스타일 */
+        #fake-dino-overlay {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: #fff;
+            z-index: 9999; font-family: 'Segoe UI', Tahoma, sans-serif;
+            padding: 15% 10%; box-sizing: border-box; color: #5f6368;
+        }
+        .dino-icon { width: 44px; height: 47px; background: url('https://kodinger.github.io/chrome-dino/dino.png') no-repeat; margin-bottom: 20px; filter: grayscale(1); opacity: 0.7; }
+        .error-msg-title { font-size: 22px; color: #202124; margin-bottom: 10px; }
+        .error-code { margin-top: 30px; font-size: 12px; color: #777; }
 
         footer {
             position: fixed; bottom: 0; width: 100%; background: #ffffff;
@@ -123,7 +126,20 @@
 </head>
 <body>
 
-    <button class="escape-btn" onclick="quickEscape()">홈으로 이동</button>
+    <!-- [수정] 홈으로 이동 버튼이 이제 위장 화면을 호출합니다 -->
+    <button class="escape-btn" onclick="activateFakeError()">홈으로 이동</button>
+
+    <!-- [추가] 가짜 공룡 게임 화면 -->
+    <div id="fake-dino-overlay">
+        <div class="dino-icon"></div>
+        <div class="error-msg-title">인터넷 연결 없음</div>
+        <p>다음을 시도해 보세요.</p>
+        <ul style="line-height: 1.8;">
+            <li>네트워크 케이블, 모뎀, 라우터 확인</li>
+            <li>Wi-Fi 다시 연결</li>
+        </ul>
+        <div class="error-code">ERR_INTERNET_DISCONNECTED</div>
+    </div>
 
     <header>
         <h1>SafeNet</h1>
@@ -140,53 +156,36 @@
         <section id="report-section" class="content-section">
             <div class="card">
                 <h3>정식 신고서</h3>
-                
                 <div id="location-display" class="location-info"></div>
-
                 <label>신고 방식 선택</label>
                 <select id="report-mode" onchange="toggleNameField()">
                     <option value="anon">익명 신고 (신원 보호)</option>
                     <option value="real">실명 신고 (본인 확인)</option>
                 </select>
-
                 <div id="real-name-container">
                     <label>신고인 성함</label>
                     <input type="text" id="user-name" placeholder="성함을 입력해 주세요">
                 </div>
-
                 <label>피해 유형</label>
-                <select>
-                    <option>유형을 선택하세요</option>
-                    <option>학교폭력 / 집단 따돌림</option>
-                    <option>가정폭력 / 학대</option>
-                    <option>기타 긴급 상황</option>
-                </select>
-
+                <select><option>유형을 선택하세요</option><option>학교폭력 / 집단 따돌림</option><option>가정폭력 / 학대</option><option>기타 긴급 상황</option></select>
                 <label>발생 장소 및 상세 주소</label>
                 <input type="text" id="detail-address" placeholder="건물명, 동·호수 등을 적어주세요.">
-
                 <label>피해 내용 기술</label>
                 <textarea rows="5" placeholder="사건 경위를 상세히 작성해 주시기 바랍니다."></textarea>
-
                 <button class="btn-submit" onclick="submitReport()">공식 신고 접수</button>
             </div>
         </section>
 
-        <!-- 보안 안내 섹션 (수정 없이 기능만 추가됨) -->
         <section id="auto-section" class="content-section" style="display:none;">
             <div class="card">
                 <h3>시스템 보안 안내</h3>
                 <p style="color: #636e72; font-size: 0.95rem; line-height: 1.6;">
                     SafeNet은 사용자의 안전을 위해 다음과 같은 보안 기술을 적용하고 있습니다.<br><br>
-                    <strong>1. 실시간 GPS 위치 추적</strong><br>
-                    긴급 신고 버튼을 누르는 즉시 사용자의 현재 좌표가 수집되어 구조를 돕습니다.<br><br>
-                    <strong>2. 데이터 암호화 전송</strong><br>
-                    모든 신고 내용은 관련 법령에 따라 철저히 비공개로 취급됩니다.
+                    <strong>1. 실시간 GPS 위치 추적</strong><br>긴급 신고 시 좌표가 수집되어 구조를 돕습니다.<br><br>
+                    <strong>2. 데이터 암호화 전송</strong><br>모든 신고 내용은 철저히 비공개로 취급됩니다.
                 </p>
                 <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-                
-                <!-- 추가된 위치 확인 인터페이스 -->
-                <button class="btn-submit" style="background: #2d3436;" onclick="showCurrentMap()">내 현재 위치 확인</button>
+                <button class="btn-submit" style="background: #2d3436;" onclick="showCurrentMap()">내 현재 위치 지도 확인</button>
                 <div id="map-container"></div>
             </div>
         </section>
@@ -199,33 +198,40 @@
 
     <div id="modal" class="modal">
         <div class="modal-content">
-            <h2 id="modal-title" style="color: var(--primary-blue); margin-bottom: 15px;">접수 완료</h2>
-            <p id="modal-body" style="color: #636e72; line-height: 1.6; margin-bottom: 25px;"></p>
+            <h2 id="modal-title">접수 완료</h2>
+            <p id="modal-body"></p>
             <button class="btn-submit" onclick="closeModal()">확인</button>
         </div>
     </div>
 
     <script>
+        // [추가] 위장 화면 실행 함수
+        function activateFakeError() {
+            document.getElementById('fake-dino-overlay').style.display = 'block';
+            // 실제 이동은 하지 않고 화면만 덮음으로써 가해자를 속임
+        }
+
+        // [추가] ESC 키 감지 이벤트
+        window.addEventListener('keydown', function(e) {
+            if (e.key === "Escape") {
+                activateFakeError();
+            }
+        });
+
         function toggleNameField() {
             const mode = document.getElementById('report-mode').value;
             const container = document.getElementById('real-name-container');
             container.style.display = (mode === 'real') ? 'block' : 'none';
         }
 
-        // 보안 안내 창 전용 지도 표시 함수
         function showCurrentMap() {
             const mapContainer = document.getElementById('map-container');
             if (navigator.geolocation) {
                 mapContainer.style.display = 'block';
                 mapContainer.innerHTML = "<p style='text-align:center; padding-top:100px; color:#666;'>지도를 불러오고 있습니다...</p>";
-                
                 navigator.geolocation.getCurrentPosition(function(pos) {
-                    const lat = pos.coords.latitude;
-                    const lon = pos.coords.longitude;
-                    // 구글 지도 임베드 (무료 방식)
-                    mapContainer.innerHTML = `<iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?q=${lat},${lon}&hl=ko&z=15&amp;output=embed"></iframe>`;
-                }, function() {
-                    mapContainer.innerHTML = "<p style='padding:20px; color:red;'>위치 정보를 가져올 수 없습니다. 권한 설정을 확인해주세요.</p>";
+                    const lat = pos.coords.latitude; const lon = pos.coords.longitude;
+                    mapContainer.innerHTML = `<iframe width="100%" height="100%" frameborder="0" src="https://maps.google.com/maps?q=${lat},${lon}&hl=ko&z=15&output=embed"></iframe>`;
                 });
             }
         }
@@ -236,12 +242,9 @@
                 display.style.display = 'block';
                 display.innerHTML = "📍 위치 파악 중...";
                 navigator.geolocation.getCurrentPosition(function(pos) {
-                    const lat = pos.coords.latitude;
-                    const lon = pos.coords.longitude;
+                    const lat = pos.coords.latitude; const lon = pos.coords.longitude;
                     display.innerHTML = `<strong>위치 수집 성공</strong><br>좌표: ${lat.toFixed(4)}, ${lon.toFixed(4)}<br><a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" style="color: #4834d4;">[지도에서 보기]</a>`;
-                    showModal("🚨 긴급 알람 발송", `현 위치 좌표(${lat.toFixed(4)}, ${lon.toFixed(4)})가 수사 기관으로 즉시 전송되었습니다. 안전한 곳으로 대피하십시오.`);
-                }, function() {
-                    display.innerHTML = "❌ 위치 정보를 가져올 수 없습니다. 권한 설정을 확인해 주세요.";
+                    showModal("🚨 긴급 알람 전송", `현 위치 좌표(${lat.toFixed(4)}, ${lon.toFixed(4)})가 수집되었습니다.`);
                 });
             }
         }
@@ -253,16 +256,8 @@
             event.currentTarget.classList.add('active');
         }
 
-        function submitReport() {
-            showModal("접수 완료", "신고서가 성공적으로 전송되었습니다. 담당 전문 요원이 신속하게 확인하겠습니다.");
-        }
-
-        function showModal(title, body) {
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-body').innerHTML = body;
-            document.getElementById('modal').style.display = 'flex';
-        }
-
+        function submitReport() { showModal("접수 완료", "신고서가 전송되었습니다."); }
+        function showModal(title, body) { document.getElementById('modal-title').innerText = title; document.getElementById('modal-body').innerHTML = body; document.getElementById('modal').style.display = 'flex'; }
         function closeModal() { document.getElementById('modal').style.display = 'none'; }
         function quickEscape() { window.location.href = "https://www.naver.com"; }
     </script>
