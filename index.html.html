@@ -91,9 +91,11 @@
 
         .escape-btn {
             position: fixed; right: 20px; bottom: 100px;
-            background: #2d3436; color: white; border: none;
-            padding: 10px 20px; border-radius: 4px; font-weight: 600;
-            z-index: 1000; cursor: pointer; font-size: 0.85rem;
+            background: rgba(45, 52, 54, 0.7);
+            color: white; border: none;
+            padding: 10px 18px; border-radius: 20px;
+            font-weight: 600; z-index: 1000; cursor: pointer;
+            font-size: 0.8rem; backdrop-filter: blur(4px);
         }
 
         footer {
@@ -110,7 +112,7 @@
 </head>
 <body>
 
-    <button class="escape-btn" onclick="quickEscape()">화면 즉시 숨기기 (Naver)</button>
+    <button class="escape-btn" onclick="quickEscape()">홈으로 이동</button>
 
     <header>
         <h1>SafeNet</h1>
@@ -124,7 +126,6 @@
     </div>
 
     <div class="container">
-        <!-- 신고 섹션 -->
         <section id="report-section" class="content-section">
             <div class="card">
                 <h3>정식 신고서</h3>
@@ -160,18 +161,15 @@
             </div>
         </section>
 
-        <!-- 보안 안내 섹션 -->
         <section id="auto-section" class="content-section" style="display:none;">
             <div class="card">
                 <h3>시스템 보안 안내</h3>
                 <p style="color: #636e72; font-size: 0.95rem; line-height: 1.6;">
-                    SafeNet은 신고자의 익명성과 안전을 최우선으로 합니다.<br><br>
-                    <strong>1. GPS 기반 실시간 위치 추적</strong><br>
-                    상단의 긴급 신고 버튼을 누르면 현재 좌표가 즉시 수집되어 구조를 돕습니다.<br><br>
-                    <strong>2. 철저한 신원 보호</strong><br>
-                    익명 신고 시 사용자의 IP 및 신원을 추적할 수 없도록 암호화됩니다.<br><br>
-                    <strong>3. 즉시 대피 모드</strong><br>
-                    화면 우측 하단의 버튼을 통해 신고 흔적을 즉시 숨길 수 있습니다.
+                    SafeNet은 사용자의 안전을 위해 다음과 같은 보안 기술을 적용하고 있습니다.<br><br>
+                    <strong>1. 실시간 GPS 위치 추적</strong><br>
+                    긴급 신고 버튼을 누르는 즉시 사용자의 현재 좌표가 수집되어 구조를 돕습니다.<br><br>
+                    <strong>2. 데이터 암호화 전송</strong><br>
+                    모든 신고 내용은 관련 법령에 따라 철저히 비공개로 취급됩니다.
                 </p>
             </div>
         </section>
@@ -206,7 +204,7 @@
                     const lat = pos.coords.latitude;
                     const lon = pos.coords.longitude;
                     display.innerHTML = `<strong>위치 수집 성공</strong><br>좌표: ${lat.toFixed(4)}, ${lon.toFixed(4)}<br><a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" style="color: #4834d4;">[지도에서 보기]</a>`;
-                    showModal("🚨 긴급 알람 전송", `현 위치 좌표(${lat.toFixed(4)}, ${lon.toFixed(4)})가 수사 기관으로 즉시 전송되었습니다. 안전한 곳으로 대피하십시오.`);
+                    showModal("🚨 긴급 알람 발송", `현 위치 좌표(${lat.toFixed(4)}, ${lon.toFixed(4)})가 수사 기관으로 즉시 전송되었습니다. 안전한 곳으로 대피하십시오.`);
                 }, function() {
                     display.innerHTML = "❌ 위치 정보를 가져올 수 없습니다. 권한 설정을 확인해 주세요.";
                 });
