@@ -6,7 +6,6 @@
     <title>SafeNet - 아동·청소년 보호 시스템</title>
     <style>
         :root {
-            /* 신뢰감을 주는 딥 블루와 차분한 인디고 조합 */
             --main-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             --glass-bg: rgba(255, 255, 255, 0.9);
             --primary-blue: #2c3e50;
@@ -46,7 +45,6 @@
             font-weight: 400;
         }
 
-        /* 긴급 신고 버튼: 진지하고 명확한 붉은색 */
         .emergency-trigger {
             background: var(--emergency-red);
             color: white;
@@ -99,7 +97,6 @@
             padding: 0 20px;
         }
 
-        /* 전문적인 카드 디자인 */
         .card {
             background: var(--glass-bg);
             border: 1px solid rgba(0,0,0,0.05);
@@ -144,6 +141,18 @@
             box-shadow: 0 0 0 3px rgba(72, 52, 212, 0.1);
         }
 
+        /* 실명 입력 필드 애니메이션 */
+        #real-name-container {
+            display: none;
+            overflow: hidden;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .btn-submit {
             background: var(--accent-indigo);
             color: white;
@@ -161,7 +170,6 @@
             background: #341f97;
         }
 
-        /* 빠른 탈출 버튼 */
         .escape-btn {
             position: fixed;
             right: 25px; bottom: 100px;
@@ -236,11 +244,17 @@
             <div class="card">
                 <h3>정식 신고 접수</h3>
                 
-                <label>신고인 본인 확인</label>
-                <select id="report-mode">
+                <label for="report-mode">신고인 본인 확인</label>
+                <select id="report-mode" onchange="toggleNameField()">
                     <option value="anon">익명 신고 (신원 비공개)</option>
                     <option value="real">실명 신고 (본인 확인)</option>
                 </select>
+
+                <!-- 실명 선택 시 나타나는 필드 -->
+                <div id="real-name-container">
+                    <label for="user-name">신고인 성함</label>
+                    <input type="text" id="user-name" placeholder="성함을 입력해 주세요">
+                </div>
 
                 <label>피해 유형 선택</label>
                 <select>
@@ -295,6 +309,18 @@
     </div>
 
     <script>
+        // 실명 신고 선택 시 이름 입력 필드 토글
+        function toggleNameField() {
+            const reportMode = document.getElementById('report-mode').value;
+            const nameContainer = document.getElementById('real-name-container');
+            
+            if (reportMode === 'real') {
+                nameContainer.style.display = 'block';
+            } else {
+                nameContainer.style.display = 'none';
+            }
+        }
+
         function switchTab(tab) {
             document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
