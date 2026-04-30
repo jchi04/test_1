@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeNet - 당신을 지키는 안전망</title>
+    <style>
+        :root {
+            --primary-grad: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            --emergency-red: #ff4d4d;
+            --bg-light: #f8f9fa;
+            --text-dark: #333;
+            --card-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding-bottom: 80px; /* 푸터 공간 */
+        }
+
+        /* 공통 헤더 및 히어로 */
+        header {
+            background: var(--primary-grad);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+        }
+
+        h1 { margin: 0; font-size: 1.8rem; letter-spacing: -1px; }
+        p.subtitle { opacity: 0.9; font-size: 0.9rem; margin-top: 10px; }
+
+        /* 긴급 신고 버튼 */
+        .emergency-trigger {
+            background-color: var(--emergency-red);
+            color: white;
+            border: none;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(255, 77, 77, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); }
+        }
+
+        /* 빠른 탈출 버튼 */
+        .escape-btn {
+            position: fixed;
+            right: 20px;
+            bottom: 100px;
+            background: #333;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            z-index: 1000;
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+        }
+
+        /* 탭 메뉴 */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-top: -25px;
+            padding: 0 20px;
+        }
+
+        .tab-btn {
+            background: white;
+            border: none;
+            padding: 15px 25px;
+            margin: 0 5px;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #2575fc;
+            color: white;
+        }
+
+        /* 메인 컨텐츠 */
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+        }
+
+        /* 폼 스타일 */
+        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 0.9rem; }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--primary-grad);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* 토글 스위치 */
+        .toggle-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: #2575fc; }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        /* 신고 상태 트래커 */
+        .status-tracker {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            position: relative;
+        }
+        .status-step {
+            text-align: center;
+            font-size: 0.7rem;
+            flex: 1;
+            color: #ccc;
+        }
+        .status-step.active { color: #6a11cb; font-weight: bold; }
+        .status-dot {
+            width: 12px; height: 12px;
+            background: #eee;
+            border-radius: 50%;
+            margin: 0 auto 5px;
+        }
+        .status-step.active .status-dot { background: #6a11cb; }
+
+        /* 심리 안정 메시지 */
+        .comfort-msg {
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f4ff;
+            border-radius: 10px;
+            border-left: 4px solid #2575fc;
+        }
+
+        /* 푸터 */
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: white;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+        .call-link {
+            color: var(--emergency-red);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 80%;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="escape-btn" onclick="quickEscape()">빠른 탈출 (닫기)</button>
+
+    <header>
+        <h1>SafeNet</h1>
+        <p class="subtitle">혼자가 아니에요. 우리가 도와줄게요.</p>
+        <button class="emergency-trigger" onclick="showEmergencyModal()">긴급<br>신고</button>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('report')">도움 요청하기</button>
+        <button class="tab-btn" onclick="switchTab('auto')">자동 보호 설정</button>
+    </div>
+
+    <div class="container">
+        
+        <!-- 섹션 1: 선택적 신고 -->
+        <section id="report-section" class="content-section active">
+            <div class="card">
+                <h3>📋 상황 알려주기</h3>
+                <label>신고 방식</label>
+                <select id="report-mode">
+                    <option value="anon">익명으로 하기 (이름 숨기기)</option>
+                    <option value="real">내 이름으로 하기</option>
+                    <option value="with">선생님/부모님과 함께하기</option>
+                </select>
+
+                <label>어떤 종류의 일인가요?</label>
+                <select>
+                    <option>선택해주세요</option>
+                    <option>학교폭력</option>
+                    <option>가정에서 힘든 일</option>
+                    <option>인터넷/SNS 폭력</option>
+                    <option>기타 도움이 필요한 일</option>
+                </select>
+
+                <label>나이</label>
+                <input type="number" placeholder="만 나이를 적어주세요">
+
+                <label>어디서 일어났나요?</label>
+                <input type="text" placeholder="장소를 적어주세요 (예: 교실, 놀이터, 집)">
+
+                <label>자세한 상황 (자유롭게)</label>
+                <textarea rows="4" placeholder="무슨 일이 있었는지 편하게 적어주세요."></textarea>
+                
+                <label>도움을 줄 기관 (중복 선택 가능)</label>
+                <div style="font-size: 0.9rem; margin-bottom: 15px;">
+                    <input type="checkbox" style="width: auto;"> 경찰청(112) &nbsp;
+                    <input type="checkbox" style="width: auto;"> 학교폭력(117) &nbsp;
+                    <input type="checkbox" style="width: auto;"> 아동보호전문기관
+                </div>
+
+                <button class="btn-submit" onclick="submitReport()">도움 요청 제출하기</button>
+                <p class="comfort-msg">✨ "당신은 충분히 용기 있는 사람입니다. 모든 것은 당신의 잘못이 아니에요."</p>
+            </div>
+
+            <!-- 진행 상태 추적 -->
+            <div class="card">
+                <h3>🕒 나의 신고 상태</h3>
+                <div class="status-tracker">
+                    <div class="status-step active">
+                        <div class="status-dot"></div>접수됨
+                    </div>
+                    <div class="status-step">
+                        <div class="status-dot"></div>검토 중
+                    </div>
+                    <div class="status-step">
+                        <div class="status-dot"></div>담당자 배정
+                    </div>
+                    <div class="status-step">
+                        <div class="status-dot"></div>처리 완료
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 섹션 2: 자동 신고 설정 -->
+        <section id="auto-section" class="content-section">
+            <div class="card">
+                <h3>🛡️ 나를 지키는 자동 설정</h3>
+                <p style="font-size: 0.85rem; color: #666;">위험한 순간이 오면 SafeNet이 대신 신고해드려요.</p>
+                
+                <div class="toggle-item">
+                    <span>소리로 감지 ("살려줘", "도와줘")</span>
+                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+                </div>
+                <div class="toggle-item">
+                    <span>갑작스러운 위치 변화 감지</span>
+                    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+                <div class="toggle-item">
+                    <span>전원 버튼 3번 누를 때 신고</span>
+                    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+
+                <label>믿을 수 있는 보호자 번호</label>
+                <input type="tel" placeholder="010-0000-0000">
+
+                <label>가장 먼저 연락할 곳</label>
+                <select>
+                    <option>112 경찰청</option>
+                    <option>117 학교폭력 상담</option>
+                    <option>미리 등록한 보호자</option>
+                </select>
+                
+                <button class="btn-submit" style="background: #333;" onclick="alert('설정이 저장되었습니다.')">설정 저장하기</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- 푸터: 고정 상담 번호 -->
+    <footer>
+        <span style="font-size: 0.8rem; color: #888;">24시간 상담 전화: </span>
+        <a href="tel:1577-1391" class="call-link">📞 1577-1391</a>
+    </footer>
+
+    <!-- 접수 완료 모달 -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">접수 완료</h2>
+            <p id="modal-body">용기 내어 알려주셔서 감사합니다. <br> 선생님과 경찰관 아저씨가 곧 확인하실 거예요. <br> 조금만 기다려주세요.</p>
+            <button class="btn-submit" onclick="closeModal()">확인</button>
+        </div>
+    </div>
+
+    <script>
+        // 탭 전환 기능
+        function switchTab(tab) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(tab + '-section').classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // 신고 제출 시뮬레이션
+        function submitReport() {
+            const mode = document.getElementById('report-mode').value;
+            const title = mode === 'anon' ? "익명 신고 완료" : "신고 접수 완료";
+            
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        // 긴급 신고 버튼
+        function showEmergencyModal() {
+            document.getElementById('modal-title').innerText = "🚨 긴급 신고 접수";
+            document.getElementById('modal-body').innerText = "가장 가까운 경찰서와 상담소에 현재 위치와 함께 긴급 알림을 보냈습니다. 안전한 곳에서 잠시만 기다려주세요.";
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // 빠른 탈출 기능
+        function quickEscape() {
+            window.location.href = "https://www.naver.com";
+        }
+    </script>
+</body>
+</html>
